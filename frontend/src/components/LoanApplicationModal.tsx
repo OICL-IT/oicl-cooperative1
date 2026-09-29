@@ -64,20 +64,20 @@ export const LoanApplicationModal: React.FC<Props> = ({ isOpen, onClose, onSucce
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 p-3 sm:p-4">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="flex max-h-[calc(100dvh-1.5rem)] w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl sm:max-h-[calc(100dvh-2rem)]"
       >
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-900">
               <Calculator className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="font-bold text-slate-900">Credit Facility Application</h2>
-              <p className="text-xs text-slate-500">Apply for cooperative credit with automated approval tracking.</p>
+              <h2 className="text-base font-semibold text-slate-900">Credit facility application</h2>
+              <p className="text-xs leading-5 text-slate-600">Apply for cooperative credit and track approval.</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-slate-50 rounded-full transition-colors">
@@ -85,7 +85,7 @@ export const LoanApplicationModal: React.FC<Props> = ({ isOpen, onClose, onSucce
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 space-y-8">
+        <form onSubmit={handleSubmit} className="min-h-0 flex-1 space-y-6 overflow-y-auto p-5 sm:p-7">
           {loading ? (
             <div className="py-20 text-center text-slate-400 italic">Initializing loan parameters...</div>
           ) : (
@@ -216,18 +216,18 @@ export const LoanApplicationModal: React.FC<Props> = ({ isOpen, onClose, onSucce
           )}
         </form>
 
-        <div className="p-6 border-t border-slate-100 bg-slate-50 flex gap-3">
+        <div className="flex flex-col-reverse gap-2 border-t border-slate-200 bg-white p-4 sm:flex-row sm:gap-3 sm:p-5">
           <button 
             type="button"
             onClick={onClose}
-            className="flex-1 py-3 px-6 rounded-xl text-xs font-black uppercase text-slate-500 hover:bg-slate-100 transition-colors"
+            className="flex-1 rounded-lg border border-slate-300 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
           >
             Cancel
           </button>
           <button 
             onClick={handleSubmit}
             disabled={submitting || loading}
-            className="flex-[2] py-4 px-6 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 flex items-center justify-center gap-2 group active:scale-95 disabled:opacity-50"
+            className="flex-[2] rounded-lg bg-emerald-900 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-emerald-950 flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {submitting ? (
               <Loader2 className="w-4 h-4 animate-spin" />

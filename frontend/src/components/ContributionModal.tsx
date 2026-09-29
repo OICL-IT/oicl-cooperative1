@@ -43,11 +43,11 @@ export const ContributionModal: React.FC<Props> = ({ isOpen, onClose, onSuccess 
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 p-3 sm:p-4">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden"
+        className="max-h-[calc(100dvh-1.5rem)] w-full max-w-lg overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl sm:max-h-[calc(100dvh-2rem)]"
       >
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <h2 className="font-bold text-slate-900">New Manual Contribution</h2>
@@ -56,60 +56,60 @@ export const ContributionModal: React.FC<Props> = ({ isOpen, onClose, onSuccess 
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5 p-5 sm:p-7">
           <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block px-1">Select Category</label>
-            <div className="grid grid-cols-3 gap-3">
+            <label className="block px-1 text-sm font-medium text-slate-700">Select category</label>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
               {contributionTypes.map((t) => (
                 <button
                   key={t.id}
                   type="button"
                   onClick={() => setFormData({ ...formData, type: t.id })}
-                  className={`p-4 rounded-2xl border-2 flex flex-col items-center gap-2 transition-all ${
-                    formData.type === t.id ? 'border-slate-900 bg-slate-50' : 'border-slate-50 hover:border-slate-100'
+                  className={`flex items-center gap-3 rounded-lg border p-3 text-left transition-colors sm:flex-col sm:text-center ${
+                    formData.type === t.id ? 'border-emerald-800 bg-emerald-50' : 'border-slate-200 hover:bg-slate-50'
                   }`}
                 >
                   <t.icon className={`w-5 h-5 ${t.color}`} />
-                  <span className="text-[9px] font-black uppercase tracking-tighter text-slate-600">{t.label}</span>
+                  <span className="text-sm font-medium text-slate-700">{t.label}</span>
                 </button>
               ))}
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block px-1">Amount (₦)</label>
+            <label className="block px-1 text-sm font-medium text-slate-700">Amount (₦)</label>
             <input 
               required
               type="number"
               value={formData.amount || ''}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, amount: Number(e.target.value) })}
-              className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-lg font-black text-slate-900 outline-none focus:border-slate-900/20 transition-colors"
+              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 outline-none transition-colors focus:border-emerald-800 focus:ring-2 focus:ring-emerald-800/15"
               placeholder="0.00"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block px-1">Reference / Note</label>
+            <label className="block px-1 text-sm font-medium text-slate-700">Reference / note</label>
             <textarea 
               value={formData.notes}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({ ...formData, notes: e.target.value })}
-              className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium text-slate-600 outline-none focus:border-slate-900/20 transition-colors h-24 resize-none"
+              className="h-24 w-full resize-none rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition-colors focus:border-emerald-800 focus:ring-2 focus:ring-emerald-800/15"
               placeholder="e.g., Share capital top-up for Q3"
             />
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:gap-3">
             <button 
               type="button"
               onClick={onClose}
-              className="flex-1 py-4 px-6 rounded-2xl text-xs font-black uppercase text-slate-500 hover:bg-slate-100 transition-colors"
+              className="flex-1 rounded-lg border border-slate-300 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
             >
               Cancel
             </button>
             <button 
               type="submit"
               disabled={submitting}
-              className="flex-2 py-4 px-6 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 flex items-center justify-center gap-2 disabled:opacity-50"
+              className="flex-[2] rounded-lg bg-emerald-900 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-emerald-950 flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Process Contribution'}
             </button>

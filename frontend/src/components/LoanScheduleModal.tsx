@@ -12,11 +12,11 @@ export const LoanScheduleModal: React.FC<Props> = ({ loan, onClose }) => {
   if (!loan) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 p-3 sm:p-4">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl flex flex-col max-h-[90vh]"
+        className="flex max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl sm:max-h-[calc(100dvh-2rem)]"
       >
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <div>
@@ -28,8 +28,8 @@ export const LoanScheduleModal: React.FC<Props> = ({ loan, onClose }) => {
           </button>
         </div>
 
-        <div className="overflow-y-auto p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="min-h-0 overflow-y-auto p-4 sm:p-6">
+          <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
             <div className="p-4 bg-slate-50 rounded-2xl">
               <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Total Principal</p>
               <p className="text-lg font-black text-slate-900">{formatCurrency(loan.principal)}</p>
@@ -44,8 +44,8 @@ export const LoanScheduleModal: React.FC<Props> = ({ loan, onClose }) => {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden">
-            <table className="w-full text-left border-collapse">
+          <div className="overflow-x-auto rounded-lg border border-slate-200">
+            <table className="w-full min-w-[640px] border-collapse text-left">
               <thead>
                 <tr className="bg-slate-50 text-[10px] uppercase font-black tracking-widest text-slate-500 border-b border-slate-100">
                   <th className="px-6 py-4">Instalment</th>
@@ -103,10 +103,10 @@ export const LoanScheduleModal: React.FC<Props> = ({ loan, onClose }) => {
           </div>
         </div>
 
-        <div className="p-6 border-t border-slate-100 bg-slate-50">
+        <div className="border-t border-slate-200 bg-white p-4 sm:p-5">
           <button 
             onClick={onClose}
-            className="w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-colors"
+            className="w-full rounded-lg bg-emerald-900 py-3 text-sm font-medium text-white transition-colors hover:bg-emerald-950"
           >
             Close Schedule
           </button>

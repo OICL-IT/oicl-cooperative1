@@ -143,7 +143,7 @@ export const StaffManagement: React.FC = () => {
           <h1 className="page-title">Staff management</h1>
           <p className="page-subtitle">Manage the enterprise master employee records.</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <button 
             onClick={downloadTemplate}
             className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all"
@@ -229,7 +229,7 @@ export const StaffManagement: React.FC = () => {
       {/* Add Single Staff Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 p-4">
-          <div className="w-full max-w-xl overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl animate-in fade-in duration-200">
+          <div className="flex max-h-[calc(100dvh-2rem)] w-full max-w-xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl animate-in fade-in duration-200">
             <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <div>
                 <h2 className="text-lg font-semibold text-slate-900">Add new staff</h2>
@@ -240,8 +240,8 @@ export const StaffManagement: React.FC = () => {
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-8 space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-6 overflow-y-auto p-5 sm:p-8">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Employee ID</label>
                   <input 
@@ -280,7 +280,7 @@ export const StaffManagement: React.FC = () => {
                     onChange={e => setFormData({...formData, lastName: e.target.value})}
                   />
                 </div>
-                <div className="col-span-2 space-y-1.5">
+                <div className="sm:col-span-2 space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Official Email</label>
                   <input 
                     required
@@ -290,7 +290,7 @@ export const StaffManagement: React.FC = () => {
                     onChange={e => setFormData({...formData, officialEmail: e.target.value})}
                   />
                 </div>
-                <div className="col-span-2 space-y-1.5">
+                <div className="sm:col-span-2 space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Department</label>
                   <input 
                     required
