@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --color-oicl-sidebar: #ffffff;
+  --color-oicl-green: #176b52;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-slate-100 text-slate-800 antialiased;
+    min-width: 320px;
+  }
+
+  h1, h2, h3 { @apply font-sans; }
+  button, a, input, select, textarea { @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700 focus-visible:ring-offset-2; }
+  button, a { -webkit-tap-highlight-color: transparent; }
+  ::selection { @apply bg-emerald-100 text-slate-950; }
+}
+
+.financial-data {
+  @apply font-mono tracking-tight;
+}
+
+.glass-card {
+  @apply bg-white rounded-xl border border-slate-200 shadow-sm transition-colors duration-150;
+}
+
+.sidebar-item {
+  @apply flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200;
+}
+
+.page-title { @apply text-2xl sm:text-[28px] font-semibold text-slate-900; }
+.page-subtitle { @apply mt-1 text-sm leading-6 text-slate-600; }
+.surface { @apply rounded-xl border border-slate-200 bg-white shadow-sm; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
