@@ -9,6 +9,7 @@ import {
   LayoutGrid,
   UserCog,
   FileText,
+  FileSpreadsheet,
   X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -33,6 +34,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ open = false, onClose }) => {
   }, []);
 
   const isAdmin = member?.role === 'admin';
+  const canManagePayroll = ['admin', 'president', 'treasurer'].includes(member?.role);
   const canViewReports = ['admin', 'president', 'treasurer', 'auditor'].includes(member?.role);
 
   const navItems = [
@@ -42,6 +44,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ open = false, onClose }) => {
     { icon: FileText, label: canViewReports ? 'Financial Status' : 'My Statement', path: '/financial-status', visible: true },
     { icon: LayoutGrid, label: 'Loan Control', path: '/admin/loans', visible: isAdmin },
     { icon: UserCog, label: 'Staff Directory', path: '/admin/staff', visible: isAdmin },
+    { icon: FileSpreadsheet, label: 'Payroll', path: '/admin/payroll', visible: canManagePayroll },
     { icon: Users, label: 'Members', path: '/members', visible: isAdmin },
     { icon: Building2, label: 'Governance', path: '/governance', visible: isAdmin },
   ];

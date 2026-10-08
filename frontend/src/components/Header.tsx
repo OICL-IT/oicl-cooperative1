@@ -36,7 +36,7 @@ export const Header: React.FC<{ onMenuClick?: () => void }> = ({ onMenuClick }) 
     }
   };
 
-  const titles: Record<string, string> = { '/': 'Overview', '/savings': 'Savings', '/loans': 'Loans', '/members': 'Members', '/admin/staff': 'Staff Directory', '/admin/loans': 'Loan Control', '/governance': 'Governance', '/financial-status': 'Financial Status' };
+  const titles: Record<string, string> = { '/': 'Overview', '/savings': 'Savings', '/loans': 'Loans', '/members': 'Members', '/admin/staff': 'Staff Directory', '/admin/payroll': 'Payroll', '/admin/loans': 'Loan Control', '/governance': 'Governance', '/financial-status': 'Financial Status' };
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6 lg:px-8">

@@ -8,6 +8,7 @@ import { Loans } from './pages/Loans';
 import { Members } from './pages/Members';
 import { StaffManagement } from './pages/StaffManagement';
 import { AdminLoans } from './pages/AdminLoans';
+import { Payroll } from './pages/Payroll';
 import { Login } from './pages/Login';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { ResetPassword } from './pages/ResetPassword';
@@ -89,6 +90,7 @@ export default function App() {
         <Route path="/loans" element={<ProtectedRoute><Loans /></ProtectedRoute>} />
         <Route path="/admin/staff" element={<ProtectedRoute><StaffManagement /></ProtectedRoute>} />
         <Route path="/admin/loans" element={<ProtectedRoute><AdminLoans /></ProtectedRoute>} />
+        <Route path="/admin/payroll" element={<ProtectedRoute><Payroll /></ProtectedRoute>} />
         <Route path="/members" element={<ProtectedRoute><Members /></ProtectedRoute>} />
         <Route path="/governance" element={<ProtectedRoute><Governance /></ProtectedRoute>} />
         <Route path="/financial-status" element={<ProtectedRoute><FinancialStatus /></ProtectedRoute>} />

@@ -74,6 +74,11 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify({ period }),
     }),
+    getPayrollTemplate: (period: string) => this.fetch(`/admin/payroll/template?period=${encodeURIComponent(period)}`),
+    uploadPayroll: (period: string, rows: Record<string, string>[]) => this.fetch('/admin/payroll/upload', {
+      method: 'POST',
+      body: JSON.stringify({ period, rows }),
+    }),
     getStaff: () => this.fetch('/admin/staff'),
     updateStaff: (id: string, data: any) => this.fetch(`/admin/staff/${id}`, {
       method: 'PATCH',
