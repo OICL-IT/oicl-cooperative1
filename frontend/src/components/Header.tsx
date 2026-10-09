@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 export const Header: React.FC<{ onMenuClick?: () => void }> = ({ onMenuClick }) => {
   const [isRunning, setIsRunning] = useState(false);
   const [member, setMember] = useState<any>(null);
+  const [payrollLockedMessage, setPayrollLockedMessage] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const [panel, setPanel] = useState<'notifications' | 'profile' | null>(null);
@@ -16,12 +17,33 @@ export const Header: React.FC<{ onMenuClick?: () => void }> = ({ onMenuClick }) 
     setMember(api.auth.getUser());
   }, []);
 
+  useEffect(() => {
+    const user = api.auth.getUser();
+    if (user?.role !== 'admin') return;
+    const period = new Date().toISOString().slice(0, 7);
+    api.admin.getPayrollStatus(period)
+      .then((status: any) => {
+        if (status.periodLocked) {
+          setPayrollLockedMessage(`Payroll for ${period} is locked. Unlock the month on the Payroll page before any further changes.`);
+        } else if (status.lockAutoPayroll) {
+          setPayrollLockedMessage(`Payroll for ${period} has already been uploaded. Use the Payroll page for any corrections.`);
+        } else {
+          setPayrollLockedMessage('');
+        }
+      })
+      .catch(() => setPayrollLockedMessage(''));
+  }, []);
+
   const handleLogout = () => {
     api.auth.logout();
     navigate('/login');
   };
 
   const runPayroll = async () => {
+    if (payrollLockedMessage) {
+      alert(payrollLockedMessage);
+      return;
+    }
     if (!confirm('Are you sure you want to run the payroll deduction batch for the current month?')) return;
     
     setIsRunning(true);
@@ -56,7 +78,8 @@ export const Header: React.FC<{ onMenuClick?: () => void }> = ({ onMenuClick }) 
           {member?.role === 'admin' && (
             <button 
               onClick={runPayroll}
-              disabled={isRunning}
+              disabled={isRunning || !!payrollLockedMessage}
+              title={payrollLockedMessage || 'Run system payroll for current month'}
               className="hidden items-center gap-2 rounded-md bg-emerald-900 px-3.5 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-950 disabled:opacity-50 sm:flex"
             >
               {isRunning ? <Loader2 className="w-3 h-3 animate-spin" /> : null}

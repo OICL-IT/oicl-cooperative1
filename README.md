@@ -43,7 +43,9 @@ OICL-COOPERATIVE/
 - **Guarantor System**: Peer-to-peer loan guarantee requests and approvals.
 - **Executive Control**:
   - Administrative dashboard for society oversight.
-  - One-click payroll deduction processing.
+  - Template-first monthly payroll deduction posting with upload governance.
+  - One-click payroll run as fallback when no upload exists for the period.
+  - Explicit monthly lock/unlock control after reconciliation to prevent unintended edits.
   - Loan category and product management.
 
 ## 🛠️ Tech Stack

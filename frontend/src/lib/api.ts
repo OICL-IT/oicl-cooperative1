@@ -74,6 +74,11 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify({ period }),
     }),
+    getPayrollStatus: (period: string) => this.fetch(`/admin/payroll/status?period=${encodeURIComponent(period)}`),
+    setPayrollLock: (period: string, locked: boolean, note = '') => this.fetch('/admin/payroll/lock', {
+      method: 'PATCH',
+      body: JSON.stringify({ period, locked, note }),
+    }),
     getPayrollTemplate: (period: string) => this.fetch(`/admin/payroll/template?period=${encodeURIComponent(period)}`),
     uploadPayroll: (period: string, rows: Record<string, string>[]) => this.fetch('/admin/payroll/upload', {
       method: 'POST',

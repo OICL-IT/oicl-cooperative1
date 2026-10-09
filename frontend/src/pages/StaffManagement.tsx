@@ -10,6 +10,7 @@ export const StaffManagement: React.FC = () => {
   const [search, setSearch] = useState('');
   const [isImporting, setIsImporting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStaff, setSelectedStaff] = useState<EmployeeMaster | null>(null);
   const [formData, setFormData] = useState({
     employeeId: '',
     payrollNumber: '',
@@ -108,6 +109,17 @@ export const StaffManagement: React.FC = () => {
            s.officialEmail?.toLowerCase().includes(searchLower);
   });
 
+  const formatDate = (value?: string) => {
+    if (!value) return '—';
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? '—' : date.toLocaleDateString();
+  };
+
+  const formatCurrency = (value?: number) => {
+    if (typeof value !== 'number') return '—';
+    return `₦${value.toLocaleString()}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -195,7 +207,12 @@ export const StaffManagement: React.FC = () => {
               {loading ? (
                 <tr><td colSpan={5} className="p-10 text-center text-slate-400 font-bold animate-pulse">Loading employee master...</td></tr>
               ) : filteredStaff.map((emp) => (
-                <tr key={emp._id} className="hover:bg-slate-50/50 transition-colors group">
+                <tr
+                  key={emp._id}
+                  onClick={() => setSelectedStaff(emp)}
+                  className="cursor-pointer hover:bg-slate-50/50 transition-colors group"
+                  title="Click to view full staff details"
+                >
                   <td className="px-6 py-4 text-xs font-black text-slate-900 font-mono">{emp.employeeId}</td>
                   <td className="px-6 py-4">
                     <p className="text-sm font-bold text-slate-800">{emp.firstName} {emp.lastName}</p>
@@ -210,7 +227,10 @@ export const StaffManagement: React.FC = () => {
                   </td>
                   <td className="px-6 py-4">
                     <button 
-                      onClick={() => toggleStatus(emp)}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        toggleStatus(emp);
+                      }}
                       className={cn(
                         "p-2 rounded-lg transition-all",
                         emp.employmentStatus === 'active' ? "hover:bg-rose-50 text-rose-400" : "hover:bg-emerald-50 text-emerald-400"
@@ -315,6 +335,43 @@ export const StaffManagement: React.FC = () => {
                 {isImporting ? 'Processing...' : 'Save Staff Record'}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {selectedStaff && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 p-4">
+          <div className="flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl animate-in fade-in duration-200">
+            <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">Staff details</h2>
+                <p className="text-sm text-slate-600">{selectedStaff.firstName} {selectedStaff.lastName}</p>
+              </div>
+              <button onClick={() => setSelectedStaff(null)} className="p-2 hover:bg-white rounded-full transition-colors text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 overflow-y-auto p-5 sm:grid-cols-2 sm:p-8">
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Employee ID</p><p className="text-sm font-semibold text-slate-800">{selectedStaff.employeeId || '—'}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Payroll Number</p><p className="text-sm font-semibold text-slate-800">{selectedStaff.payrollNumber || '—'}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">First Name</p><p className="text-sm font-semibold text-slate-800">{selectedStaff.firstName || '—'}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Last Name</p><p className="text-sm font-semibold text-slate-800">{selectedStaff.lastName || '—'}</p></div>
+              <div className="sm:col-span-2"><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Official Email</p><p className="text-sm font-semibold text-slate-800">{selectedStaff.officialEmail || '—'}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Phone Number</p><p className="text-sm font-semibold text-slate-800">{selectedStaff.phoneNumber || '—'}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Department</p><p className="text-sm font-semibold text-slate-800">{selectedStaff.department || '—'}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Grade Level</p><p className="text-sm font-semibold text-slate-800">{selectedStaff.gradeLevel || '—'}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Branch</p><p className="text-sm font-semibold text-slate-800">{selectedStaff.branch || '—'}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Staff Category</p><p className="text-sm font-semibold text-slate-800">{selectedStaff.staffCategory || '—'}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Company</p><p className="text-sm font-semibold text-slate-800">{selectedStaff.companyName || '—'}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Job Title</p><p className="text-sm font-semibold text-slate-800">{selectedStaff.jobTitle || '—'}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Employment Status</p><p className="text-sm font-semibold capitalize text-slate-800">{selectedStaff.employmentStatus || '—'}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Date of Employment</p><p className="text-sm font-semibold text-slate-800">{formatDate(selectedStaff.dateOfEmployment)}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Monthly Net Pay</p><p className="text-sm font-semibold text-slate-800">{formatCurrency(selectedStaff.monthlyNetPay)}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Monthly Statutory Deductions</p><p className="text-sm font-semibold text-slate-800">{formatCurrency(selectedStaff.monthlyStatutoryDeductions)}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Imported By</p><p className="text-sm font-semibold text-slate-800">{selectedStaff.importedBy || '—'}</p></div>
+              <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Created At</p><p className="text-sm font-semibold text-slate-800">{formatDate(selectedStaff.createdAt)}</p></div>
+            </div>
           </div>
         </div>
       )}

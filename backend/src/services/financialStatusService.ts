@@ -5,7 +5,11 @@ import { SOP_RULES } from '../config/sop.js';
 
 const CURRENT_LOAN_STATUSES = ['active', 'defaulted'];
 const PENDING_LOAN_STATUSES = ['pending', 'awaiting_guarantors', 'awaiting_approval'];
-const ORDINARY_TYPES = ['ordinary', 'thrift'];
+const ORDINARY_TYPES = ['ordinary', 'thrift', 'ordinary_savings'];
+const TARGET_TYPES = ['target', 'target_savings'];
+const AGM_LEVY_TYPES = ['agm_levy', 'agm levy'];
+const DEVELOPMENT_LEVY_TYPES = ['development_levy', 'development levy'];
+const SHARES_TYPES = ['shares', 'share_capital', 'investment_shares'];
 
 export const normalizePeriod = (value: unknown) => {
   const period = String(value || new Date().toISOString().slice(0, 7));
@@ -63,11 +67,12 @@ export const buildFinancialStatuses = async (memberFilter: Record<string, unknow
       loanDeductions[category] += Number(loan.monthlyDeduction || 0);
     });
 
-    const ordinarySavings = amountByTypes(memberEntries, ORDINARY_TYPES);
-    const targetSavings = amountByTypes(memberEntries, ['target']);
-    const developmentLevy = amountByTypes(memberEntries, ['development_levy']);
-    const agmLevy = amountByTypes(memberEntries, ['agm_levy']);
-    const sharesFromLedger = amountByTypes(memberEntries, ['shares']);
+    const ordinaryFromLedger = amountByTypes(memberEntries, ORDINARY_TYPES);
+    const targetSavings = amountByTypes(memberEntries, TARGET_TYPES);
+    const developmentLevy = amountByTypes(memberEntries, DEVELOPMENT_LEVY_TYPES);
+    const agmLevy = amountByTypes(memberEntries, AGM_LEVY_TYPES);
+    const sharesFromLedger = amountByTypes(memberEntries, SHARES_TYPES);
+    const ordinarySavings = Math.max(ordinaryFromLedger, Number(member.totalSavings || 0));
     const monthlyOrdinary = Number(member.monthlyContribution || 0);
     const monthlyTarget = Number(member.targetSavingsContribution || 0);
     const reportMonth = Number(period.slice(5, 7));
@@ -97,7 +102,7 @@ export const buildFinancialStatuses = async (memberFilter: Record<string, unknow
       membershipStatus: member.status,
       period,
       balances: {
-        ordinarySavings: ordinarySavings || Number(member.totalSavings || 0),
+        ordinarySavings,
         targetSavings,
         investmentShares: sharesFromLedger || Number(member.shareCapital || 0),
         agmLevy,

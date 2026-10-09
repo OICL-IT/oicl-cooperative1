@@ -2,6 +2,7 @@ import { Member } from '../models/Member.js';
 import { Loan } from '../models/Loan.js';
 import { Savings, AuditLog } from '../models/Savings.js';
 import { buildFinancialStatuses, normalizePeriod } from '../services/financialStatusService.js';
+import { getPayrollPeriodStatus, setPayrollPeriodLockState } from '../services/payrollGovernanceService.js';
 
 const SAVINGS_COLUMNS = [
   { column: 'ordinary_savings', type: 'ordinary' },
@@ -43,10 +44,95 @@ export const getPayrollTemplate = async (req: any, res: any) => {
   }
 };
 
+export const getPayrollStatus = async (req: any, res: any) => {
+  try {
+    const period = normalizePeriod(req.query.period);
+    if (!process.env.MONGODB_URI) {
+      return res.json({
+        period,
+        status: 'not_processed',
+        systemGeneratedEntries: 0,
+        uploadedEntries: 0,
+        periodLocked: false,
+        lockedAt: null,
+        lockedBy: '',
+        unlockedAt: null,
+        unlockedBy: '',
+        lockNote: '',
+        lockAutoPayroll: false,
+      });
+    }
+    res.json(await getPayrollPeriodStatus(period));
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+export const setPayrollPeriodLock = async (req: any, res: any) => {
+  try {
+    const period = normalizePeriod(req.body.period);
+    const locked = req.body.locked;
+    if (typeof locked !== 'boolean') {
+      return res.status(400).json({ error: 'The "locked" field must be true or false.' });
+    }
+
+    const role = String(req.user?.role || '').toLowerCase();
+    if (!locked && !['admin', 'president'].includes(role)) {
+      return res.status(403).json({ error: 'Only admin or president can unlock a closed payroll month.' });
+    }
+
+    const actor = req.user?.fullName || req.user?.role || 'Admin';
+    await setPayrollPeriodLockState(period, locked, actor, req.body.note);
+    const latest = await getPayrollPeriodStatus(period);
+
+    await AuditLog.create({
+      action: locked ? 'Payroll Month Locked' : 'Payroll Month Unlocked',
+      details: `${period} set to ${locked ? 'LOCKED' : 'UNLOCKED'}.`,
+      actorName: actor,
+    });
+
+    res.json({
+      message: locked
+        ? `Payroll month ${period} is now locked.`
+        : `Payroll month ${period} is now unlocked.`,
+      ...latest,
+    });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
 const parseAmount = (value: unknown) => {
-  const text = String(value ?? '').replace(/[,\s₦N]/g, '');
-  if (text === '') return 0;
-  const amount = Number(text);
+  const raw = String(value ?? '').trim();
+  if (raw === '') return 0;
+
+  // Allow common payroll formats such as:
+  // 30,000.00 | 30.000,00 | 30000 | ₦ 30 000
+  let normalized = raw
+    .replace(/[']/g, '')
+    .replace(/\s/g, '')
+    .replace(/[^0-9,.\-]/g, '');
+  const hasComma = normalized.includes(',');
+  const hasDot = normalized.includes('.');
+
+  if (hasComma && hasDot) {
+    const decimalSeparator = normalized.lastIndexOf(',') > normalized.lastIndexOf('.') ? ',' : '.';
+    if (decimalSeparator === ',') {
+      normalized = normalized.replace(/\./g, '').replace(',', '.');
+    } else {
+      normalized = normalized.replace(/,/g, '');
+    }
+  } else if (hasComma) {
+    const parts = normalized.split(',');
+    const decimalLike = parts.length === 2 && parts[1].length > 0 && parts[1].length <= 2;
+    normalized = decimalLike ? `${parts[0]}.${parts[1]}` : parts.join('');
+  } else if (hasDot) {
+    const parts = normalized.split('.');
+    const thousandLike = parts.length > 2 || (parts.length === 2 && parts[1].length === 3 && parts[0].length > 0);
+    if (thousandLike) normalized = parts.join('');
+  }
+
+  const amount = Number(normalized);
   return Number.isFinite(amount) && amount >= 0 ? amount : NaN;
 };
 
@@ -59,9 +145,16 @@ export const uploadPayroll = async (req: any, res: any) => {
     if (!process.env.MONGODB_URI) return res.json({ message: 'Mock payroll upload', processed: rows.length, errors: [] });
 
     const actor = req.user?.fullName || req.user?.role || 'Admin';
+    const periodStatus = await getPayrollPeriodStatus(period);
+    if (periodStatus.periodLocked) {
+      return res.status(423).json({ error: `Payroll month ${period} is locked. Unlock the month before posting adjustments.` });
+    }
     const errors: { row: number; staffId: string; error: string }[] = [];
     const notices: string[] = [];
     let processed = 0;
+    if (periodStatus.status === 'system_processed') {
+      notices.push(`System payroll was already run for ${period}. Uploaded savings and levies will override those system-generated entries.`);
+    }
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];

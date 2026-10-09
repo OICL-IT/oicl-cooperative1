@@ -3,6 +3,7 @@ import { Loan } from '../models/Loan.js';
 import { Savings, AuditLog } from '../models/Savings.js';
 import { EmployeeMaster } from '../models/EmployeeMaster.js';
 import { SOP_RULES } from '../config/sop.js';
+import { getPayrollPeriodStatus } from '../services/payrollGovernanceService.js';
 
 const isMockMode = () => !process.env.MONGODB_URI;
 
@@ -192,6 +193,18 @@ export const processPayroll = async (req: any, res: any) => {
 
     if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(period || '')) {
       return res.status(400).json({ error: 'Payroll period must use YYYY-MM format.' });
+    }
+
+    const periodStatus = await getPayrollPeriodStatus(period);
+    if (periodStatus.periodLocked) {
+      return res.status(423).json({
+        error: `Payroll month ${period} is locked. Unlock the month before running system payroll.`,
+      });
+    }
+    if (periodStatus.lockAutoPayroll) {
+      return res.status(409).json({
+        error: `Payroll for ${period} was already uploaded. To keep one source of truth, use the Payroll template upload flow for corrections instead of Run Payroll.`,
+      });
     }
 
     const members = await Member.find({ status: 'active' });
