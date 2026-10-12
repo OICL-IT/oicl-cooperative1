@@ -31,7 +31,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.18, ease: 'easeOut' }}
-          className="mx-auto w-full max-w-[1440px]"
+          className="mx-auto w-full max-w-360"
         >
           {children}
         </motion.div>
