@@ -3,7 +3,7 @@
  */
 
 class ApiClient {
-  private baseUrl = '/api';
+  private baseUrl = `${((import.meta as any).env?.VITE_API_URL || '').replace(/\/$/, '')}/api`;
   private token: string | null = localStorage.getItem('oicl-token');
   private user: any | null = JSON.parse(localStorage.getItem('oicl-user') || 'null');
 

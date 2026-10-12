@@ -1,4 +1,5 @@
 import express from 'express';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
@@ -44,10 +45,17 @@ export const setupVite = async (expressApp: express.Application) => {
     expressApp.use(vite.middlewares);
   } else {
     const distPath = path.resolve(__dirname, '../../frontend/dist');
-    expressApp.use(express.static(distPath));
-    expressApp.get('*', (req: any, res: any) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
+    if (fs.existsSync(path.join(distPath, 'index.html'))) {
+      expressApp.use(express.static(distPath));
+      expressApp.get('*', (req: any, res: any) => {
+        res.sendFile(path.join(distPath, 'index.html'));
+      });
+    } else {
+      // Frontend is deployed separately (e.g. Vercel); this service is API-only.
+      expressApp.get('/', (_req: any, res: any) => {
+        res.json({ status: 'ok', service: 'OICL API' });
+      });
+    }
   }
 };
 
