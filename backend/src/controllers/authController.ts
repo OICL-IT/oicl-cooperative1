@@ -91,7 +91,8 @@ export const login = async (req: any, res: any) => {
       return res.status(403).json({ error: statusMessages[member.status] || 'This membership is not active.' });
     }
     const token = jwt.sign({ id: member._id, role: member.role }, JWT_SECRET);
-    res.json({ token, user: member });
+    const { password: _password, ...safeUser } = member.toObject();
+    res.json({ token, user: safeUser });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -268,7 +269,8 @@ export const resetPassword = async (req: any, res: any) => {
 export const getMe = async (req: any, res: any) => {
   try {
     if (isMockMode()) return res.json({ fullName: 'Mock User', role: req.user.role });
-    const member = await Member.findById(req.user.id);
+    const member = await Member.findById(req.user.id).select('-password');
+    if (!member) return res.status(404).json({ error: 'Member not found' });
     res.json(member);
   } catch (err: any) {
     res.status(500).json({ error: err.message });

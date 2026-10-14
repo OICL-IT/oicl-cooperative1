@@ -91,7 +91,7 @@ export const bulkImportEmployees = async (req: any, res: any) => {
 export const getMembers = async (req: any, res: any) => {
   try {
     if (isMockMode()) return res.json([]);
-    const members = await Member.find({}).sort({ fullName: 1 });
+    const members = await Member.find({}).select('-password').sort({ fullName: 1 });
     res.json(members);
   } catch (err: any) {
     res.status(500).json({ error: err.message });

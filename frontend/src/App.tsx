@@ -46,8 +46,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuth = () => {
-      const u = api.auth.getUser();
+    const checkAuth = async () => {
+      const u = await api.auth.refreshUser();
       setUser(u);
       setLoading(false);
     };

@@ -59,6 +59,19 @@ class ApiClient {
       body: JSON.stringify({ token, password }),
     }),
     getUser: () => this.user,
+    refreshUser: async () => {
+      if (!this.token) return this.user;
+      try {
+        const fresh = await this.fetch('/auth/me');
+        if (fresh?._id) {
+          this.user = fresh;
+          localStorage.setItem('oicl-user', JSON.stringify(fresh));
+        }
+      } catch {
+        // Keep the cached profile if the refresh fails (e.g. offline).
+      }
+      return this.user;
+    },
     isAuthenticated: () => !!this.token,
   };
 
